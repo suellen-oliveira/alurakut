@@ -1,35 +1,22 @@
-import React, { useState } from 'react';
-import MainGrid from '../src/components/MainGrid'
-import Box from '../src/components/Box'
-import { AlurakutMenu, AlurakutProfileSidebarMenuDefault , OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
-import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
+import React, { useState, useEffect } from 'react';
+import MainGrid from '../components/MainGrid'
+import Box from '../components/Box'
+import { AlurakutMenu, OrkutNostalgicIconSet } from '../lib/AlurakutCommons';
+import { ProfileRelationsBoxWrapper } from '../components/ProfileRelations';
+import { alurakutFriends, currentAlurakutUser } from '../services/api';
+import ProfileSidebar from '../components/ProfileSideBar';
 
-function ProfileSidebar(propriedades) {
-  
-  return (
-    <Box>
-      <img src={`https://github.com/${propriedades.githubUser}.png`} style={{ borderRadius: '8px' }} />
-      <hr />
 
-      <p>
-        <a className="boxLink" href={`https://github.com/${propriedades.githubUser}`}>
-          @{propriedades.githubUser}
-        </a>
-      </p>
-      <hr />
-
-      <AlurakutProfileSidebarMenuDefault />
-    </Box>
-  )
-}
 
 export default function Home() {
+  const [user, setUser] = useState({});
+  const [amigos, setAmigos] = useState([]);
   const [comunidades, setComunidades] = useState([{
     id: 'erhfierjkkn',
     title: 'Eu odeio acordar cedo',
     image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
   }]);
-  const usuarioAleatorio = 'suellen-oliveira';
+
   const pessoasFavoritas = [
     'juunegreiros',
     'omariosouto',
@@ -39,17 +26,31 @@ export default function Home() {
     'felipefialho'
   ]
 
+
+
+  useEffect(() => {
+    currentAlurakutUser()
+    .then(response => setUser(response))
+    .catch(err => console.error(err))
+
+    alurakutFriends()
+    .then(response => setAmigos(response))
+  }, []);
+
+
+
+
   return (
     <>
-      <AlurakutMenu />
+      <AlurakutMenu githubUser={user} />
       <MainGrid>
         <div className="profileArea" style={{ gridArea: 'profileArea' }}>
-          <ProfileSidebar githubUser={usuarioAleatorio} />
+          <ProfileSidebar githubUser={user} />
         </div>
         <div className="welcomeArea" style={{ gridArea: 'welcomeArea' }}>
           <Box>
             <h1 className="title">
-              Bem vindo(a), {usuarioAleatorio} 
+              Bem vindo(a), {user.name}
             </h1>
 
             <OrkutNostalgicIconSet />
@@ -91,18 +92,18 @@ export default function Home() {
           </Box>
         </div>
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
-        <ProfileRelationsBoxWrapper>
+          <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
-              Amigos ({pessoasFavoritas.length})
+              Meus amigos ({amigos.length})
             </h2>
 
             <ul>
-              {pessoasFavoritas.map((itemAtual) => {
+              {amigos.map((itemAtual) => {
                 return (
-                  <li key={itemAtual}>
-                    <a href={`/users/${itemAtual}`}>
-                      <img src={`https://github.com/${itemAtual}.png`} />
-                      <span>{itemAtual}</span>
+                  <li key={itemAtual.id}>
+                    <a href={itemAtual.html_user}>
+                      <img src={itemAtual.avatar_url} />
+                      <span>{itemAtual.name}</span>
                     </a>
                   </li>
                 )
@@ -111,7 +112,7 @@ export default function Home() {
           </ProfileRelationsBoxWrapper>
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
-              Comunidades ({comunidades.length})
+              MInhas comunidades ({comunidades.length})
             </h2>
             <ul>
                 {comunidades.map((itemAtual) => {
