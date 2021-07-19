@@ -10,6 +10,6 @@ export const currentAlurakutUser = async () => {
 
 export const alurakutFriends = async () => {
     const { data } = await axios.get(`${baseURL}/followers`);
-    console.log('requisicao arquivo api: ', data)
+
     return data;
 }
