@@ -1,15 +1,15 @@
 import axios from 'axios';
 
-const baseURL = `https://api.github.com/users/suellen-oliveira`;
+const baseURL = `https://api.github.com/users`;
 
-export const currentAlurakutUser = async () => {
-    const { data } = await axios.get(baseURL);
+export const currentAlurakutUser = async (user) => {
+    const { data } = await axios.get(`${baseURL}/${user}`);
 
     return data;
 }
 
-export const alurakutFriends = async () => {
-    const { data } = await axios.get(`${baseURL}/followers`);
+export const alurakutFriends = async (user) => {
+    const { data } = await axios.get(`${baseURL}/${user}/followers`);
 
     return data;
 }
